@@ -85,7 +85,7 @@ public class Parser {
     }
 
     protected App app() {
-        Node left = get(this::tryRemoveParen, this::tryAbs, this::tryVar);
+        Node left = get(this::tryRemoveParen, this::tryVar);
         return get(() -> tryAppRight(left));
     }
 
