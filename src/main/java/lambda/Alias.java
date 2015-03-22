@@ -4,11 +4,11 @@ import java.util.Objects;
 
 import lambda.util.Equals;
 
-public class Var implements Expr {
+public class Alias implements Expr {
 
     public final String name;
 
-    public Var(String name) {
+    public Alias(String name) {
         this.name = name;
     }
 
@@ -24,7 +24,7 @@ public class Var implements Expr {
 
     @Override
     public boolean equals(Object obj) {
-        return Equals.of(Var.class).getter(a -> a.name).equals(this, obj);
+        return Equals.of(Alias.class).getter(a -> a.name).equals(this, obj);
     }
 
     @Override

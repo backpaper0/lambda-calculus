@@ -43,11 +43,24 @@ public class Lexer {
                 case ')':
                     consume();
                     return new Token(TokenType.R_PAREN, ")");
+                case '=':
+                    consume();
+                    return new Token(TokenType.EQUAL, "=");
+                case '@':
+                    consume();
+                    return new Token(TokenType.DEF, "@");
                 default:
                     if ('a' <= c && c <= 'z') {
                         char name = c;
                         consume();
                         return new Token(TokenType.ID, String.valueOf(name));
+                    } else if (('A' <= c && c <= 'Z') || c == '_') {
+                        StringBuilder buf = new StringBuilder();
+                        do {
+                            buf.append(c);
+                            consume();
+                        } while (('A' <= c && c <= 'Z') || c == '_');
+                        return new Token(TokenType.ALIAS, buf.toString());
                     }
                     //TODO ParseExceptionの詳細
                     throw new ParseException();

@@ -4,13 +4,13 @@ import java.util.Objects;
 
 import lambda.util.Equals;
 
-public class App implements Node {
+public class App implements Expr {
 
-    public final Node left;
+    public final Expr left;
 
-    public final Node right;
+    public final Expr right;
 
-    public App(Node left, Node right) {
+    public App(Expr left, Expr right) {
         this.left = left;
         this.right = right;
     }

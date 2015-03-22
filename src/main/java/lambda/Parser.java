@@ -40,20 +40,28 @@ public class Parser {
     }
 
     public Node parse() {
-        Node expr = expr();
+        List<Node> nodes = new ArrayList<>();
+        do {
+            Def stat = def();
+            nodes.add(stat);
+        } while (token.isTypeOf(TokenType.DEF));
         match(TokenType.EOF);
-        return expr;
+        return new Stats(nodes);
     }
 
-    protected Node paren() {
+    protected Expr paren() {
         match(TokenType.L_PAREN);
-        Node expr = expr();
+        Expr expr = expr();
         match(TokenType.R_PAREN);
         return expr;
     }
 
-    protected Node expr() {
-        return get(this::tryApp, this::tryAbs, this::tryVar, this::tryParen);
+    protected Expr expr() {
+        return get(this::tryApp,
+                   this::tryAbs,
+                   this::tryVar,
+                   this::tryAlias,
+                   this::tryParen);
     }
 
     protected Var var() {
@@ -69,51 +77,54 @@ public class Parser {
 
     private Abs absWithoutLambda() {
         Var var = var();
-        Node expr = get(this::tryNestedAbs, this::tryAbsExpr);
+        Expr expr = get(this::tryNestedAbs, this::tryAbsExpr);
         return new Abs(var, expr);
     }
 
-    private Optional<Node> tryNestedAbs() {
-        return tryNode(this::absWithoutLambda);
+    private Optional<Expr> tryNestedAbs() {
+        return tryExpr(this::absWithoutLambda);
     }
 
-    private Optional<Node> tryAbsExpr() {
-        return tryNode(() -> {
+    private Optional<Expr> tryAbsExpr() {
+        return tryExpr(() -> {
             match(TokenType.PERIOD);
             return expr();
         });
     }
 
     protected App app() {
-        Node left = get(this::tryParen, this::tryVar);
+        Expr left = get(this::tryParen, this::tryVar, this::tryAlias);
         return get(() -> tryAppWithLeft(left));
     }
 
-    private Optional<App> tryAppWithLeft(Node left) {
-        return tryNode(() -> {
-            Node right = get(this::tryParen, this::tryAbs, this::tryVar);
+    private Optional<App> tryAppWithLeft(Expr left) {
+        return tryExpr(() -> {
+            Expr right = get(this::tryParen,
+                             this::tryAbs,
+                             this::tryVar,
+                             this::tryAlias);
             App app = new App(left, right);
             return tryAppWithLeft(app).orElse(app);
         });
     }
 
-    private Optional<Node> tryParen() {
-        return tryNode(this::paren);
+    private Optional<Expr> tryParen() {
+        return tryExpr(this::paren);
     }
 
-    private Optional<Node> tryVar() {
-        return tryNode(this::var);
+    private Optional<Expr> tryVar() {
+        return tryExpr(this::var);
     }
 
-    private Optional<Node> tryAbs() {
-        return tryNode(this::abs);
+    private Optional<Expr> tryAbs() {
+        return tryExpr(this::abs);
     }
 
-    private Optional<Node> tryApp() {
-        return tryNode(this::app);
+    private Optional<Expr> tryApp() {
+        return tryExpr(this::app);
     }
 
-    private <T extends Node> Optional<T> tryNode(Supplier<T> supplier) {
+    private <T extends Expr> Optional<T> tryExpr(Supplier<T> supplier) {
         indexes.add(index);
         try {
             T node = supplier.get();
@@ -128,7 +139,7 @@ public class Parser {
     }
 
     @SafeVarargs
-    private final <T extends Node> T get(Supplier<Optional<T>>... suppliers) {
+    private final <T extends Expr> T get(Supplier<Optional<T>>... suppliers) {
         //TODO ParseExceptionの詳細
         return Arrays.stream(suppliers)
                      .map(Supplier::get)
@@ -136,5 +147,23 @@ public class Parser {
                      .map(Optional::get)
                      .findFirst()
                      .orElseThrow(ParseException::new);
+    }
+
+    protected Def def() {
+        match(TokenType.DEF);
+        Alias alias = alias();
+        match(TokenType.EQUAL);
+        Expr expr = expr();
+        return new Def(alias, expr);
+    }
+
+    protected Alias alias() {
+        Token name = token;
+        match(TokenType.ALIAS);
+        return new Alias(name.text);
+    }
+
+    private Optional<Expr> tryAlias() {
+        return tryExpr(this::alias);
     }
 }

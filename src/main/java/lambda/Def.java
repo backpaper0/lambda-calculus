@@ -4,14 +4,14 @@ import java.util.Objects;
 
 import lambda.util.Equals;
 
-public class Abs implements Expr {
+public class Def implements Node {
 
-    public final Var var;
+    public final Alias alias;
 
     public final Expr expr;
 
-    public Abs(Var var, Expr expr) {
-        this.var = var;
+    public Def(Alias alias, Expr expr) {
+        this.alias = alias;
         this.expr = expr;
     }
 
@@ -22,19 +22,19 @@ public class Abs implements Expr {
 
     @Override
     public int hashCode() {
-        return Objects.hash(var, expr);
+        return Objects.hash(alias, expr);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return Equals.of(Abs.class)
-                     .getter(a -> a.var)
+        return Equals.of(Def.class)
+                     .getter(a -> a.alias)
                      .getter(a -> a.expr)
                      .equals(this, obj);
     }
 
     @Override
     public String toString() {
-        return String.format("(\\%1$s.%2$s)", var, expr);
+        return String.format("@%1$s = %2$s", alias, expr);
     }
 }
