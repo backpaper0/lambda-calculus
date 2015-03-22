@@ -26,8 +26,10 @@ public class Token {
 
     @Override
     public boolean equals(Object obj) {
-        return Equals.of(Token.class).getter(a -> a.type).getter(a -> a.text)
-                .equals(this, obj);
+        return Equals.of(Token.class)
+                     .getter(a -> a.type)
+                     .getter(a -> a.text)
+                     .equals(this, obj);
     }
 
     @Override

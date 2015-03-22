@@ -33,7 +33,7 @@ public class Equals<T> {
             return false;
         }
         T other = clazz.cast(obj);
-        return getters.stream().allMatch(
-                f -> Objects.equals(f.apply(self), f.apply(other)));
+        return getters.stream().allMatch(f -> Objects.equals(f.apply(self),
+                                                             f.apply(other)));
     }
 }

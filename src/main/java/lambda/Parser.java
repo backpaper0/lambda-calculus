@@ -53,8 +53,7 @@ public class Parser {
     }
 
     protected Node expr() {
-        return get(this::tryApp, this::tryAbs, this::tryVar,
-                this::tryRemoveParen);
+        return get(this::tryApp, this::tryAbs, this::tryVar, this::tryParen);
     }
 
     protected Var var() {
@@ -70,10 +69,11 @@ public class Parser {
 
     private Abs absWithoutLambda() {
         Var var = var();
-        return new Abs(var, get(this::tryAbsWithoutLambda, this::tryAbsExpr));
+        Node expr = get(this::tryNestedAbs, this::tryAbsExpr);
+        return new Abs(var, expr);
     }
 
-    private Optional<Node> tryAbsWithoutLambda() {
+    private Optional<Node> tryNestedAbs() {
         return tryNode(this::absWithoutLambda);
     }
 
@@ -85,19 +85,19 @@ public class Parser {
     }
 
     protected App app() {
-        Node left = get(this::tryRemoveParen, this::tryVar);
-        return get(() -> tryAppRight(left));
+        Node left = get(this::tryParen, this::tryVar);
+        return get(() -> tryAppWithLeft(left));
     }
 
-    private Optional<App> tryAppRight(Node left) {
+    private Optional<App> tryAppWithLeft(Node left) {
         return tryNode(() -> {
-            Node right = get(this::tryRemoveParen, this::tryAbs, this::tryVar);
+            Node right = get(this::tryParen, this::tryAbs, this::tryVar);
             App app = new App(left, right);
-            return tryAppRight(app).orElse(app);
+            return tryAppWithLeft(app).orElse(app);
         });
     }
 
-    private Optional<Node> tryRemoveParen() {
+    private Optional<Node> tryParen() {
         return tryNode(this::paren);
     }
 
@@ -130,8 +130,11 @@ public class Parser {
     @SafeVarargs
     private final <T extends Node> T get(Supplier<Optional<T>>... suppliers) {
         //TODO ParseExceptionの詳細
-        return Arrays.stream(suppliers).map(Supplier::get)
-                .filter(Optional::isPresent).map(Optional::get).findFirst()
-                .orElseThrow(ParseException::new);
+        return Arrays.stream(suppliers)
+                     .map(Supplier::get)
+                     .filter(Optional::isPresent)
+                     .map(Optional::get)
+                     .findFirst()
+                     .orElseThrow(ParseException::new);
     }
 }

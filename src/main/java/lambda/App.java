@@ -27,8 +27,10 @@ public class App implements Node {
 
     @Override
     public boolean equals(Object obj) {
-        return Equals.of(App.class).getter(a -> a.left).getter(a -> a.right)
-                .equals(this, obj);
+        return Equals.of(App.class)
+                     .getter(a -> a.left)
+                     .getter(a -> a.right)
+                     .equals(this, obj);
     }
 
     @Override

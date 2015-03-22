@@ -27,8 +27,10 @@ public class Abs implements Node {
 
     @Override
     public boolean equals(Object obj) {
-        return Equals.of(Abs.class).getter(a -> a.var).getter(a -> a.expr)
-                .equals(this, obj);
+        return Equals.of(Abs.class)
+                     .getter(a -> a.var)
+                     .getter(a -> a.expr)
+                     .equals(this, obj);
     }
 
     @Override

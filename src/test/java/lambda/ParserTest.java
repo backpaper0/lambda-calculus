@@ -4,9 +4,7 @@ import static lambda.test.Nodes.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
-import java.io.IOException;
 import java.io.StringReader;
-import java.text.ParseException;
 
 import org.junit.Test;
 
@@ -71,8 +69,7 @@ public class ParserTest {
     //λf. (λx. f (λy. x x y)) (λx. f (λy. x x y))
     @Test
     public void testParseZCombinator() throws Exception {
-        Node actual = parser("\\f. (\\x. f (\\y. x x y)) (\\x. f (\\y. x x y))")
-                .parse();
+        Node actual = parser("\\f. (\\x. f (\\y. x x y)) (\\x. f (\\y. x x y))").parse();
         Var f = var("f");
         Var x = var("x");
         Var y = var("y");
@@ -81,8 +78,7 @@ public class ParserTest {
         assertThat(actual, is(expected));
     }
 
-    private static Parser parser(String source) throws IOException,
-            ParseException {
+    private static Parser parser(String source) {
         return new Parser(new Lexer(new StringReader(source)));
     }
 }
