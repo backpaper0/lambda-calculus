@@ -27,7 +27,7 @@ public class Lexer {
 
     public Token next() {
         while (c != EOF) {
-            if (c == ' ') {
+            if (c == ' ' || c == '\r' || c == '\n' || c == '\t') {
                 consume();
             } else {
                 switch (c) {
