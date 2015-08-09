@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'eclipse'
 
 group = 'backpaper0'
 version = '1.0-SNAPSHOT'
