@@ -3,5 +3,5 @@ Lambda Calculus
 
 ## Licence
 
-[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+Licensed under [The MIT License](https://opensource.org/licenses/MIT)
 
