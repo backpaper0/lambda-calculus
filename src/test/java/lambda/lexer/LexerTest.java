@@ -1,5 +1,6 @@
 package lambda.lexer;
 
+import static lambda.Tests.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Iterator;
@@ -52,25 +53,5 @@ public class LexerTest {
     public void test_unknown_character() throws Exception {
         Iterator<Token> lexer = Lexer.tokens("0".chars()).iterator();
         assertThatThrownBy(lexer::next);
-    }
-
-    private static Token name(char c) {
-        return new Token(TokenType.NAME, c);
-    }
-
-    private static Token parenl() {
-        return new Token(TokenType.PAREN_L, '(');
-    }
-
-    private static Token parenr() {
-        return new Token(TokenType.PAREN_R, ')');
-    }
-
-    private static Token lambda() {
-        return new Token(TokenType.LAMBDA, 'λ');
-    }
-
-    private static Token period() {
-        return new Token(TokenType.PERIOD, '.');
     }
 }
